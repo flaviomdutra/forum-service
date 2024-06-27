@@ -1,8 +1,8 @@
 import { Either, left, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
 import { Attachment } from '../../enterprise/entities/attachment'
-import type { AttachmentsRepository } from '../repositories/attachments-repository'
-import type { Uploader } from '../storage/uploader'
+import { AttachmentsRepository } from '../repositories/attachments-repository'
+import { Uploader } from '../storage/uploader'
 import { InvalidAttachmentTypeError } from './errors/invalid-attachment-type-error'
 
 interface UploadAndCreateAttachmentRequest {
