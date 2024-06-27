@@ -1,22 +1,31 @@
-import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { makeQuestion } from 'test/factories/make-question'
-import { InMemoryQuestionsRepository } from 'test/repositories/in-memory-questions-repository'
 import { EditQuestionUseCase } from './edit-question'
-import { NotAllowedError } from '@/core/errors/not-allowed-error'
+import { InMemoryQuestionsRepository } from 'test/repositories/in-memory-questions-repository'
+import { makeQuestion } from 'test/factories/make-question'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { InMemoryQuestionAttachmentsRepository } from 'test/repositories/in-memory-question-attachments-repository'
 import { makeQuestionAttachment } from 'test/factories/make-question-attachments'
+import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
+import { InMemoryStudentsRepository } from 'test/repositories/in-memory-students-repository'
+import { NotAllowedError } from '@/core/errors/not-allowed-error'
+
+let inMemoryQuestionsRepository: InMemoryQuestionsRepository
+let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
+let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
+let inMemoryStudentsRepository: InMemoryStudentsRepository
+let sut: EditQuestionUseCase
 
 describe('Edit Question', () => {
-  let inMemoryQuestionsRepository: InMemoryQuestionsRepository
-  let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
-  let sut: EditQuestionUseCase
-
   beforeEach(() => {
     inMemoryQuestionAttachmentsRepository =
       new InMemoryQuestionAttachmentsRepository()
+    inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
+    inMemoryStudentsRepository = new InMemoryStudentsRepository()
     inMemoryQuestionsRepository = new InMemoryQuestionsRepository(
       inMemoryQuestionAttachmentsRepository,
+      inMemoryAttachmentsRepository,
+      inMemoryStudentsRepository,
     )
+
     sut = new EditQuestionUseCase(
       inMemoryQuestionsRepository,
       inMemoryQuestionAttachmentsRepository,
@@ -26,9 +35,9 @@ describe('Edit Question', () => {
   it('should be able to edit a question', async () => {
     const newQuestion = makeQuestion(
       {
-        authorId: new UniqueEntityID('author-id'),
+        authorId: new UniqueEntityID('author-1'),
       },
-      new UniqueEntityID('question-id'),
+      new UniqueEntityID('question-1'),
     )
 
     await inMemoryQuestionsRepository.create(newQuestion)
@@ -45,16 +54,16 @@ describe('Edit Question', () => {
     )
 
     await sut.execute({
-      authorId: 'author-id',
-      questionId: 'question-id',
-      title: 'new-title',
-      content: 'new-content',
+      questionId: newQuestion.id.toValue(),
+      authorId: 'author-1',
+      title: 'Pergunta teste',
+      content: 'Conteúdo teste',
       attachmentsIds: ['1', '3'],
     })
 
     expect(inMemoryQuestionsRepository.items[0]).toMatchObject({
-      title: 'new-title',
-      content: 'new-content',
+      title: 'Pergunta teste',
+      content: 'Conteúdo teste',
     })
 
     expect(
@@ -71,18 +80,18 @@ describe('Edit Question', () => {
   it('should not be able to edit a question from another user', async () => {
     const newQuestion = makeQuestion(
       {
-        authorId: new UniqueEntityID('author-id'),
+        authorId: new UniqueEntityID('author-1'),
       },
-      new UniqueEntityID('question-id'),
+      new UniqueEntityID('question-1'),
     )
 
     await inMemoryQuestionsRepository.create(newQuestion)
 
     const result = await sut.execute({
-      authorId: 'author-wrong-id',
-      questionId: 'question-id',
-      title: 'new-title',
-      content: 'new-content',
+      questionId: newQuestion.id.toValue(),
+      authorId: 'author-2',
+      title: 'Pergunta teste',
+      content: 'Conteúdo teste',
       attachmentsIds: [],
     })
 
