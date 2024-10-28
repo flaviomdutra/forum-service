@@ -10,6 +10,7 @@ import {
   Post,
   UsePipes,
 } from '@nestjs/common'
+import { ApiBody } from '@nestjs/swagger'
 import { z } from 'zod'
 import { ZodValidationPipe } from '../pipes/zod-validation-pipe'
 
@@ -26,6 +27,17 @@ type CreateAccountBodySchema = z.infer<typeof createAccountBodySchema>
 export class CreateAccountController {
   constructor(private registerStudent: RegisterStudentUseCase) {}
 
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        email: { type: 'string', format: 'email' },
+        password: { type: 'string' },
+      },
+      required: ['name', 'email', 'password'],
+    },
+  })
   @Post()
   @HttpCode(201)
   @UsePipes(new ZodValidationPipe(createAccountBodySchema))
