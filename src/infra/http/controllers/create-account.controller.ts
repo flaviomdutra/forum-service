@@ -1,6 +1,7 @@
 import { StudentAlreadyExistsError } from '@/domain/forum/application/use-cases/errors/student-already-exists-error'
 import { RegisterStudentUseCase } from '@/domain/forum/application/use-cases/register-student'
 import { Public } from '@/infra/auth/public'
+import { ApiZodBody } from '@/infra/documentation/api-zod-body'
 import {
   BadRequestException,
   Body,
@@ -10,7 +11,6 @@ import {
   Post,
   UsePipes,
 } from '@nestjs/common'
-import { ApiBody } from '@nestjs/swagger'
 import { z } from 'zod'
 import { ZodValidationPipe } from '../pipes/zod-validation-pipe'
 
@@ -27,17 +27,7 @@ type CreateAccountBodySchema = z.infer<typeof createAccountBodySchema>
 export class CreateAccountController {
   constructor(private registerStudent: RegisterStudentUseCase) {}
 
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        name: { type: 'string' },
-        email: { type: 'string', format: 'email' },
-        password: { type: 'string' },
-      },
-      required: ['name', 'email', 'password'],
-    },
-  })
+  @ApiZodBody(createAccountBodySchema)
   @Post()
   @HttpCode(201)
   @UsePipes(new ZodValidationPipe(createAccountBodySchema))
