@@ -1,6 +1,6 @@
-import { Prisma, Attachment as PrismaAttachment } from '@prisma/client'
-import { Attachment } from '@/domain/forum/enterprise/entities/attachment'
-import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { Prisma, Attachment as PrismaAttachment } from "@prisma/client";
+import { Attachment } from "@/domain/forum/enterprise/entities/attachment";
+import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 
 export class PrismaAttachmentMapper {
   static toDomain(raw: PrismaAttachment): Attachment {
@@ -10,7 +10,7 @@ export class PrismaAttachmentMapper {
         url: raw.url,
       },
       new UniqueEntityID(raw.id),
-    )
+    );
   }
 
   static toPrisma(
@@ -20,6 +20,6 @@ export class PrismaAttachmentMapper {
       id: attachment.id.toString(),
       title: attachment.title,
       url: attachment.url,
-    }
+    };
   }
 }

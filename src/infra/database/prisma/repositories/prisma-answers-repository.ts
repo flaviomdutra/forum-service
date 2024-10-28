@@ -1,11 +1,11 @@
-import { PaginationParams } from '@/core/repositories/pagination-params'
-import { AnswersRepository } from '@/domain/forum/application/repositories/answers-repository'
-import { Answer } from '@/domain/forum/enterprise/entities/answer'
-import { Injectable } from '@nestjs/common'
-import { PrismaAnswerMapper } from '../mappers/prisma-answer-mapper'
-import { PrismaService } from '../prisma.service'
-import { AnswerAttachmentsRepository } from '@/domain/forum/application/repositories/answer-attachments-repository'
-import { DomainEvents } from '@/core/events/domain-events'
+import { PaginationParams } from "@/core/repositories/pagination-params";
+import { AnswersRepository } from "@/domain/forum/application/repositories/answers-repository";
+import { Answer } from "@/domain/forum/enterprise/entities/answer";
+import { Injectable } from "@nestjs/common";
+import { PrismaAnswerMapper } from "../mappers/prisma-answer-mapper";
+import { PrismaService } from "../prisma.service";
+import { AnswerAttachmentsRepository } from "@/domain/forum/application/repositories/answer-attachments-repository";
+import { DomainEvents } from "@/core/events/domain-events";
 
 @Injectable()
 export class PrismaAnswersRepository implements AnswersRepository {
@@ -19,13 +19,13 @@ export class PrismaAnswersRepository implements AnswersRepository {
       where: {
         id,
       },
-    })
+    });
 
     if (!answer) {
-      return null
+      return null;
     }
 
-    return PrismaAnswerMapper.toDomain(answer)
+    return PrismaAnswerMapper.toDomain(answer);
   }
 
   async findManyByQuestionId(
@@ -35,31 +35,31 @@ export class PrismaAnswersRepository implements AnswersRepository {
     const answers = await this.prisma.answer.findMany({
       where: { questionId },
       orderBy: {
-        createdAt: 'desc',
+        createdAt: "desc",
       },
       take: 20,
       skip: (page - 1) * 20,
-    })
+    });
 
-    return answers.map(PrismaAnswerMapper.toDomain)
+    return answers.map(PrismaAnswerMapper.toDomain);
   }
 
   async create(answer: Answer): Promise<void> {
-    const data = PrismaAnswerMapper.toPrisma(answer)
+    const data = PrismaAnswerMapper.toPrisma(answer);
 
     await this.prisma.answer.create({
       data,
-    })
+    });
 
     await this.answerAttachmentsRepository.createMany(
       answer.attachments.getItems(),
-    )
+    );
 
-    DomainEvents.dispatchEventsForAggregate(answer.id)
+    DomainEvents.dispatchEventsForAggregate(answer.id);
   }
 
   async save(answer: Answer): Promise<void> {
-    const data = PrismaAnswerMapper.toPrisma(answer)
+    const data = PrismaAnswerMapper.toPrisma(answer);
 
     await Promise.all([
       this.prisma.answer.update({
@@ -74,9 +74,9 @@ export class PrismaAnswersRepository implements AnswersRepository {
       this.answerAttachmentsRepository.deleteMany(
         answer.attachments.getRemovedItems(),
       ),
-    ])
+    ]);
 
-    DomainEvents.dispatchEventsForAggregate(answer.id)
+    DomainEvents.dispatchEventsForAggregate(answer.id);
   }
 
   async delete(answer: Answer): Promise<void> {
@@ -84,6 +84,6 @@ export class PrismaAnswersRepository implements AnswersRepository {
       where: {
         id: answer.id.toString(),
       },
-    })
+    });
   }
 }

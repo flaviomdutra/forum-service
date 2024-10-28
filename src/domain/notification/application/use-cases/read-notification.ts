@@ -1,21 +1,21 @@
-import { Either, left, right } from '@/core/either'
-import { Notification } from '../../enterprise/entities/notification'
-import { NotificationsRepository } from '../repositories/notifications-repository'
-import { NotAllowedError } from '@/core/errors/not-allowed-error'
-import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
-import { Injectable } from '@nestjs/common'
+import { Either, left, right } from "@/core/either";
+import { Notification } from "../../enterprise/entities/notification";
+import { NotificationsRepository } from "../repositories/notifications-repository";
+import { NotAllowedError } from "@/core/errors/not-allowed-error";
+import { ResourceNotFoundError } from "@/core/errors/resource-not-found-error";
+import { Injectable } from "@nestjs/common";
 
 interface ReadNotificationUseCaseRequest {
-  recipientId: string
-  notificationId: string
+  recipientId: string;
+  notificationId: string;
 }
 
 type ReadNotificationUseCaseResponse = Either<
   ResourceNotFoundError | NotAllowedError,
   {
-    notification: Notification
+    notification: Notification;
   }
->
+>;
 
 @Injectable()
 export class ReadNotificationUseCase {
@@ -26,20 +26,20 @@ export class ReadNotificationUseCase {
     notificationId,
   }: ReadNotificationUseCaseRequest): Promise<ReadNotificationUseCaseResponse> {
     const notification =
-      await this.notificationsRepository.findById(notificationId)
+      await this.notificationsRepository.findById(notificationId);
 
     if (!notification) {
-      return left(new ResourceNotFoundError())
+      return left(new ResourceNotFoundError());
     }
 
     if (recipientId !== notification.recipientId.toString()) {
-      return left(new NotAllowedError())
+      return left(new NotAllowedError());
     }
 
-    notification.read()
+    notification.read();
 
-    await this.notificationsRepository.save(notification)
+    await this.notificationsRepository.save(notification);
 
-    return right({ notification })
+    return right({ notification });
   }
 }
