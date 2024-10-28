@@ -1,3 +1,6 @@
+import { StudentAlreadyExistsError } from '@/domain/forum/application/use-cases/errors/student-already-exists-error'
+import { RegisterStudentUseCase } from '@/domain/forum/application/use-cases/register-student'
+import { Public } from '@/infra/auth/public'
 import {
   BadRequestException,
   Body,
@@ -9,9 +12,6 @@ import {
 } from '@nestjs/common'
 import { z } from 'zod'
 import { ZodValidationPipe } from '../pipes/zod-validation-pipe'
-import { RegisterStudentUseCase } from '@/domain/forum/application/use-cases/register-student'
-import { StudentAlreadyExistsError } from '@/domain/forum/application/use-cases/errors/student-already-exists-error'
-import { Public } from '@/infra/auth/public'
 
 const createAccountBodySchema = z.object({
   name: z.string(),
