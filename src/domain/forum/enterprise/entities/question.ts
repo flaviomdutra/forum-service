@@ -1,25 +1,25 @@
-import { UniqueEntityID } from "@/core/entities/unique-entity-id";
-import { Optional } from "@/core/types/optional";
-import dayjs from "dayjs";
-import { Slug } from "./value-objects/slug";
-import { AggregateRoot } from "@/core/entities/aggregate-root";
-import { QuestionAttachmentList } from "./question-attachment-list";
-import { QuestionBestAnswerChosenEvent } from "../events/question-best-answer-chosen-event";
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { Optional } from '@/core/types/optional'
+import dayjs from 'dayjs'
+import { Slug } from './value-objects/slug'
+import { AggregateRoot } from '@/core/entities/aggregate-root'
+import { QuestionAttachmentList } from './question-attachment-list'
+import { QuestionBestAnswerChosenEvent } from '../events/question-best-answer-chosen-event'
 
 export interface QuestionProps {
-  authorId: UniqueEntityID;
-  bestAnswerId?: UniqueEntityID | null;
-  attachments: QuestionAttachmentList;
-  title: string;
-  content: string;
-  slug: Slug;
-  createdAt: Date;
-  updatedAt?: Date | null;
+  authorId: UniqueEntityID
+  bestAnswerId?: UniqueEntityID | null
+  attachments: QuestionAttachmentList
+  title: string
+  content: string
+  slug: Slug
+  createdAt: Date
+  updatedAt?: Date | null
 }
 
 export class Question extends AggregateRoot<QuestionProps> {
   static create(
-    props: Optional<QuestionProps, "createdAt" | "slug" | "attachments">,
+    props: Optional<QuestionProps, 'createdAt' | 'slug' | 'attachments'>,
     id?: UniqueEntityID,
   ) {
     const question = new Question(
@@ -30,69 +30,69 @@ export class Question extends AggregateRoot<QuestionProps> {
         createdAt: props.createdAt ?? new Date(),
       },
       id,
-    );
+    )
 
-    return question;
+    return question
   }
 
   get authorId(): UniqueEntityID {
-    return this.props.authorId;
+    return this.props.authorId
   }
 
   get bestAnswerId(): UniqueEntityID | undefined | null {
-    return this.props.bestAnswerId;
+    return this.props.bestAnswerId
   }
 
   get title(): string {
-    return this.props.title;
+    return this.props.title
   }
 
   get content(): string {
-    return this.props.content;
+    return this.props.content
   }
 
   get slug(): Slug {
-    return this.props.slug;
+    return this.props.slug
   }
 
   get createdAt(): Date {
-    return this.props.createdAt;
+    return this.props.createdAt
   }
 
   get updatedAt(): Date | undefined | null {
-    return this.props.updatedAt;
+    return this.props.updatedAt
   }
 
   get isNew(): boolean {
-    return dayjs().diff(this.props.createdAt, "day") <= 3;
+    return dayjs().diff(this.props.createdAt, 'day') <= 3
   }
 
   get excerpt(): string {
-    return this.content.substring(0, 120).trimEnd().concat("...");
+    return this.content.substring(0, 120).trimEnd().concat('...')
   }
 
   get attachments(): QuestionAttachmentList {
-    return this.props.attachments;
+    return this.props.attachments
   }
 
   private touch() {
-    this.props.updatedAt = new Date();
+    this.props.updatedAt = new Date()
   }
 
   set title(title: string) {
-    this.props.title = title;
-    this.props.slug = Slug.createFromText(title);
-    this.touch();
+    this.props.title = title
+    this.props.slug = Slug.createFromText(title)
+    this.touch()
   }
 
   set content(content: string) {
-    this.props.content = content;
-    this.touch();
+    this.props.content = content
+    this.touch()
   }
 
   set bestAnswerId(bestAnswerId: UniqueEntityID | undefined | null) {
     if (bestAnswerId === undefined || bestAnswerId === null) {
-      return;
+      return
     }
 
     if (
@@ -100,16 +100,14 @@ export class Question extends AggregateRoot<QuestionProps> {
       this.props.bestAnswerId === null ||
       !bestAnswerId.equals(this.props.bestAnswerId)
     ) {
-      this.addDomainEvent(
-        new QuestionBestAnswerChosenEvent(this, bestAnswerId),
-      );
+      this.addDomainEvent(new QuestionBestAnswerChosenEvent(this, bestAnswerId))
     }
 
-    this.props.bestAnswerId = bestAnswerId;
-    this.touch();
+    this.props.bestAnswerId = bestAnswerId
+    this.touch()
   }
 
   set attachments(attachments: QuestionAttachmentList) {
-    this.props.attachments = attachments;
+    this.props.attachments = attachments
   }
 }

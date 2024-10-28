@@ -1,5 +1,5 @@
-import { QuestionDetails } from "@/domain/forum/enterprise/entities/value-objects/question-details";
-import { AttachmentPresenter } from "./attachment-presenter";
+import { QuestionDetails } from '@/domain/forum/enterprise/entities/value-objects/question-details'
+import { AttachmentPresenter } from './attachment-presenter'
 
 export class QuestionDetailsPresenter {
   static toHTTP(questionDetails: QuestionDetails) {
@@ -14,6 +14,6 @@ export class QuestionDetailsPresenter {
       attachments: questionDetails.attachments.map(AttachmentPresenter.toHTTP),
       createdAt: questionDetails.createdAt,
       updatedAt: questionDetails.updatedAt,
-    };
+    }
   }
 }

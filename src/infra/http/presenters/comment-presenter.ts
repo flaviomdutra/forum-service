@@ -1,4 +1,4 @@
-import { Comment } from "@/domain/forum/enterprise/entities/comment";
+import { Comment } from '@/domain/forum/enterprise/entities/comment'
 
 export class CommentPresenter {
   static toHTTP(comment: Comment<never>) {
@@ -7,6 +7,6 @@ export class CommentPresenter {
       content: comment.content,
       createdAt: comment.createdAt,
       updatedAt: comment.updatedAt,
-    };
+    }
   }
 }

@@ -1,17 +1,17 @@
-import { Either, right } from "@/core/either";
-import { AnswerCommentsRepository } from "@/domain/forum/application/repositories/answer-comments-repository";
-import { Injectable } from "@nestjs/common";
-import type { CommentWithAuthor } from "../../enterprise/entities/value-objects/comment-with-author";
+import { Either, right } from '@/core/either'
+import { AnswerCommentsRepository } from '@/domain/forum/application/repositories/answer-comments-repository'
+import { Injectable } from '@nestjs/common'
+import type { CommentWithAuthor } from '../../enterprise/entities/value-objects/comment-with-author'
 
 interface FetchAnswerCommentsUseCaseRequest {
-  answerId: string;
-  page: number;
+  answerId: string
+  page: number
 }
 
 type FetchAnswerCommentsUseCaseResponse = Either<
   null,
   { comments: CommentWithAuthor[] }
->;
+>
 
 @Injectable()
 export class FetchAnswerCommentsUseCase {
@@ -27,8 +27,8 @@ export class FetchAnswerCommentsUseCase {
         {
           page,
         },
-      );
+      )
 
-    return right({ comments });
+    return right({ comments })
   }
 }
