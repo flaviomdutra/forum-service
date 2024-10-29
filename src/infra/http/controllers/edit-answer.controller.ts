@@ -1,3 +1,8 @@
+import { EditAnswerUseCase } from '@/domain/forum/application/use-cases/edit-answer'
+import { CurrentUser } from '@/infra/auth/current-user-decorator'
+import { UserPayload } from '@/infra/auth/jwt.strategy'
+import { ApiZodBody } from '@/infra/documentation/api-zod-body'
+import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import {
   BadRequestException,
   Body,
@@ -6,11 +11,7 @@ import {
   Param,
   Put,
 } from '@nestjs/common'
-import { CurrentUser } from '@/infra/auth/current-user-decorator'
-import { UserPayload } from '@/infra/auth/jwt.strategy'
-import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
-import { EditAnswerUseCase } from '@/domain/forum/application/use-cases/edit-answer'
 
 const editAnswerBodySchema = z.object({
   content: z.string(),
@@ -25,6 +26,7 @@ type EditAnswerBodySchema = z.infer<typeof editAnswerBodySchema>
 export class EditAnswerController {
   constructor(private editAnswer: EditAnswerUseCase) {}
 
+  @ApiZodBody(editAnswerBodySchema)
   @Put()
   @HttpCode(204)
   async handle(

@@ -1,6 +1,7 @@
 import { EditQuestionUseCase } from '@/domain/forum/application/use-cases/edit-question'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
+import { ApiZodBody } from '@/infra/documentation/api-zod-body'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import {
   BadRequestException,
@@ -26,6 +27,7 @@ type EditQuestionBodySchema = z.infer<typeof editQuestionBodySchema>
 export class EditQuestionController {
   constructor(private editQuestion: EditQuestionUseCase) {}
 
+  @ApiZodBody(editQuestionBodySchema)
   @Put()
   @HttpCode(204)
   async handle(

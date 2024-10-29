@@ -1,6 +1,13 @@
 import { applyDecorators } from '@nestjs/common'
 import { ApiBody } from '@nestjs/swagger'
-import { ZodArray, ZodObject, ZodRawShape, ZodString, ZodType } from 'zod'
+import {
+  ZodArray,
+  ZodDefault,
+  ZodObject,
+  ZodRawShape,
+  ZodString,
+  ZodType,
+} from 'zod'
 
 type SwaggerSchema = {
   type: 'object'
@@ -28,7 +35,25 @@ const createSwaggerSchemaFromZod = <T extends ZodRawShape>(
       items?: { type: string; format?: string }
     } = { type: 'object' }
 
-    if (prop instanceof ZodArray) {
+    if (prop instanceof ZodDefault) {
+      switch (prop._def.innerType._def.typeName) {
+        case 'ZodString':
+          propSchema.type = 'string'
+          break
+        case 'ZodNumber':
+          propSchema.type = 'number'
+          break
+        case 'ZodBoolean':
+          propSchema.type = 'boolean'
+          break
+        case 'ZodArray':
+          propSchema.type = 'array'
+          if (prop._def.innerType._def.type._def.typeName === 'ZodString') {
+            propSchema.items = { type: 'string' }
+          }
+          break
+      }
+    } else if (prop instanceof ZodArray) {
       propSchema.type = 'array'
       if (prop.element instanceof ZodString) {
         propSchema.items = { type: 'string' }

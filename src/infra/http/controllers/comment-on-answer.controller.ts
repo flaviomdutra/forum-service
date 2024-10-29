@@ -1,3 +1,8 @@
+import { CommentOnAnswerUseCase } from '@/domain/forum/application/use-cases/comment-on-answer'
+import { CurrentUser } from '@/infra/auth/current-user-decorator'
+import { UserPayload } from '@/infra/auth/jwt.strategy'
+import { ApiZodBody } from '@/infra/documentation/api-zod-body'
+import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import {
   BadRequestException,
   Body,
@@ -5,11 +10,7 @@ import {
   Param,
   Post,
 } from '@nestjs/common'
-import { CurrentUser } from '@/infra/auth/current-user-decorator'
-import { UserPayload } from '@/infra/auth/jwt.strategy'
-import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
-import { CommentOnAnswerUseCase } from '@/domain/forum/application/use-cases/comment-on-answer'
 
 const commentOnAnswerBodySchema = z.object({
   content: z.string(),
@@ -23,6 +24,7 @@ type CommentOnAnswerBodySchema = z.infer<typeof commentOnAnswerBodySchema>
 export class CommentOnAnswerController {
   constructor(private commentOnAnswer: CommentOnAnswerUseCase) {}
 
+  @ApiZodBody(commentOnAnswerBodySchema)
   @Post()
   async handle(
     @Body(bodyValidationPipe) body: CommentOnAnswerBodySchema,

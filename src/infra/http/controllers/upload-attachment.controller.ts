@@ -11,6 +11,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
+import { ApiBody, ApiConsumes } from '@nestjs/swagger'
 
 @Controller('/attachments')
 export class UploadAttachmentController {
@@ -18,6 +19,18 @@ export class UploadAttachmentController {
     private uploadAndCreateAttachment: UploadAndCreateAttachmentUseCase,
   ) {}
 
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiConsumes('multipart/form-data')
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   async handle(
